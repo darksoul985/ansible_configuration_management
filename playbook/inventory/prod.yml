@@ -1,0 +1,19 @@
+---
+el:
+  hosts:
+    ubuntu2:
+      ansible_connection: docker
+deb:
+  hosts:
+    ubuntu:
+      ansible_connection: docker
+
+local:
+  hosts:
+    localhost:
+      ansible_connection: local
+
+fedora:
+  hosts:
+    fedora:
+      ansible_connection: docker
