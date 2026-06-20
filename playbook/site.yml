@@ -1,0 +1,101 @@
+---
+# ==============================
+# Install Clickhouse
+# ==============================
+- name: Install Clickhouse
+  hosts: clickhouse
+  handlers:
+    - name: Start clickhouse service
+      ansible.builtin.debug:
+        msg: "Skipping service start in Docker environment (no systemd)"
+
+  tasks:
+    - name: Get clickhouse distrib
+      block:
+        - name: Determine architecture suffix for each package
+          set_fact:
+            arch_suffix: "{{ 'x86_64' if item == 'clickhouse-common-static' else 'noarch' }}"
+          loop: "{{ clickhouse_packages }}"
+          register: arch_results
+
+        - name: Messege loop
+          debug:
+            msg: "Package {{ item.item }} will use architecture: {{ item.ansible_facts.arch_suffix }}"
+          loop: "{{ arch_results.results }}"
+
+        - name: Download ClickHouse packages with correct architecture
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/rpm/stable/{{ item.item }}-{{ clickhouse_version }}.{{ item.ansible_facts.arch_suffix }}.rpm"
+            dest: "/tmp/{{ item.item }}-{{ clickhouse_version }}.rpm"
+            mode: "0644"
+          loop: "{{ arch_results.results }}"
+
+      rescue:
+        - name: Fallback - download only clickhouse-common-static with x86_64
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
+            dest: "/tmp/clickhouse-common-static-{{ clickhouse_version }}.rpm"
+            mode: "0644"
+
+    - name: Install clickhouse packages
+      ansible.builtin.yum:
+        name: "{{ item }}"
+      with_fileglob:
+        - "/tmp/clickhouse-*.rpm"
+      notify: Start clickhouse service
+    - name: Flush handlers
+      meta: flush_handlers
+    - name: Create database
+      ansible.builtin.debug:
+        msg: "Skipping DB creation in Docker environment (ClickHouse server not running)"
+
+# ==========================================
+# SECOND PLAY - Install and configure Vector
+# ==========================================
+
+- name: Intalling vector
+  hosts: vector
+  handlers:
+    - name: Start vector service
+      ansible.builtin.debug:
+        msg: "Skipping service start in Docker environment (no systemd)"
+  tasks:
+    - name: Create vecktor directory
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+      loop:
+        - /etc/vector
+        - /opt/vector
+
+    - name: Download Vector archive
+      ansible.builtin.get_url:
+        url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-x86_64-unknown-linux-gnu.tar.gz"
+        dest: "/tmp/vector.tar.gz"
+        mode: "0644"
+
+    - name: Unpack Vector
+      ansible.builtin.unarchive:
+        src: "/tmp/vector.tar.gz"
+        dest: "/opt/vector"
+        remote_src: true
+
+    - name: Deploy Vector config
+      ansible.builtin.template:
+        src: templates/vector.yml.j2
+        dest: /etc/vector/vector.yml
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Start vector service
+
+    - name: Install systemd unit for Vector
+      ansible.builtin.debug:
+        msg: "Skipping systemd unit installation in Docker"
+
+    - name: Enable and start Vector
+      ansible.builtin.debug:
+        msg: "Skipping Vector start in Docker (no systemd)"

@@ -1,0 +1,10 @@
+[Unit]
+Description=Vector Service
+After=network.target
+
+[Service]
+ExecStart=/opt/vector/vector-x86_64-unknown-linux-gnu/bin/vector --config /etc/vector/vector.yml
+Restart=always
+
+[Install]
+WantedBy=multi-user.target   
