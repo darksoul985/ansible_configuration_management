@@ -1,0 +1,23 @@
+[Unit]
+Description=Vector
+Documentation=https://vector.dev
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+User=vector
+Group=vector
+ExecStart=/usr/local/bin/vector --config {{ vector_config_path }}
+Restart=always
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGTERM
+LimitNOFILE=65536
+EnvironmentFile=-/etc/default/vector
+WorkingDirectory=/var/lib/vector
+StandardOutput=journal
+StandardError=journal
+ProtectSystem=full
+ProtectHome=read-only
+
+[Install]
+WantedBy=multi-user.target
