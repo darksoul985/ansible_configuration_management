@@ -1,10 +1,23 @@
 [Unit]
-Description=Vector Service
-After=network.target
+Description=Vector
+Documentation=https://vector.dev
+After=network-online.target
+Requires=network-online.target
 
 [Service]
-ExecStart=/opt/vector/vector-x86_64-unknown-linux-gnu/bin/vector --config /etc/vector/vector.yml
+User=vector
+Group=vector
+ExecStart=/usr/local/bin/vector --config {{ vector_config_path }}
 Restart=always
+ExecReload=/bin/kill -HUP $MAINPID
+KillSignal=SIGTERM
+LimitNOFILE=65536
+EnvironmentFile=-/etc/default/vector
+WorkingDirectory=/var/lib/vector
+StandardOutput=journal
+StandardError=journal
+ProtectSystem=full
+ProtectHome=read-only
 
 [Install]
-WantedBy=multi-user.target   
+WantedBy=multi-user.target

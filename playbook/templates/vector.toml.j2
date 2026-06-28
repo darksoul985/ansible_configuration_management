@@ -1,0 +1,12 @@
+[sources.journal_ntp]
+type = "journald"
+current_boot_only = true
+include_units = [ "ntp" ]
+
+[sinks.log_ntp]
+type = "file"
+inputs = [ "journal_ntp" ]
+path = "/tmp/ntp-%Y-%m-%d.log"
+
+[sinks.log_ntp.encoding]
+codec = "text"
