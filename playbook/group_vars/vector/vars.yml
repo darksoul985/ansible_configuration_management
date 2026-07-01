@@ -1,0 +1,10 @@
+vector_version: "0.55.0"
+vector_repo_url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-x86_64-unknown-linux-gnu.tar.gz"
+vector_config_dir: "/etc/vector"
+vector_config_path: "{{ vector_config_dir }}/vector.toml"
+
+vector_install_dir: "/opt/vector-{{ vector_version }}"
+vector_data_dir: /var/lib/vector
+vector_log_dir: /var/log/vector
+vector_user: vector
+vector_group: vector

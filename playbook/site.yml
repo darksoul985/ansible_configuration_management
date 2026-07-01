@@ -1,0 +1,44 @@
+---
+- name: Install Clickhouse
+  hosts: clickhouse
+  roles:
+    - clickhouse
+
+- name: Intalling vector
+  hosts: vector
+  tasks:
+    - name: Install dependencies
+      ansible.builtin.yum:
+        name: ["wget", "tar", "gzip"]
+        state: present
+      become: true
+
+    - name: Include role
+      ansible.builtin.include_role:
+        name: "{{ 'vector-role' }}"
+
+- name: Installing Lighthouse CI Server
+  hosts: lighthouse
+  become: true
+
+  pre_tasks:
+    - name: Update yum cache
+      ansible.builtin.yum:
+        update_cache: yes
+
+  tasks:
+    - name: Include role
+      ansible.builtin.include_role:
+        name: "{{ 'lighthouse' }}"
+      vars:
+        lighthouse_database_type: sqlite
+        lighthouse_listen_port: 9888
+        lighthouse_auth_token: "my-secret-token"
+
+    - name: Enable Nginx reverse proxy with SSL
+      ansible.builtin.set_fact:
+        lighthouse_install_nginx: true
+        lighthouse_nginx_server_name: "lighthouse.example.com"
+        lighthouse_nginx_ssl_enabled: true
+        lighthouse_nginx_ssl_certificate: "/etc/ssl/certs/lighthouse.crt"
+        lighthouse_nginx_ssl_certificate_key: "/etc/ssl/private/lighthouse.key"
