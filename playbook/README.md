@@ -1,6 +1,6 @@
 # Описание ролей
 
-В проекте используются две Ansible-роли: **clickhouse** (взятая из Ansible Galaxy, автор Alexey V. Bobrov) и **vector-role** (кастомная). Обе предназначены для установки и конфигурирования соответствующих сервисов на целевых хостах.
+В проекте используются две Ansible-роли: **clickhouse** (взятая из Ansible Galaxy, автор Alexey V. Bobrov), **vector-role** (кастомная), **lighthouse** (кастомная). Все предназначены для установки и конфигурирования соответствующих сервисов на целевых хостах.
 
 ---
 
@@ -10,11 +10,11 @@
 
 ### Поддерживаемые ОС
 
-| Дистрибутив        | Версии                        |
-|--------------------|-------------------------------|
-| Ubuntu             | xenial, bionic, focal         |
-| Debian             | jessie, stretch, buster, bullseye |
-| CentOS/RHEL (EL)   | 7, 8                          |
+| Дистрибутив      | Версии                            |
+| ---------------- | --------------------------------- |
+| Ubuntu           | xenial, bionic, focal             |
+| Debian           | jessie, stretch, buster, bullseye |
+| CentOS/RHEL (EL) | 7, 8                              |
 
 ### Как работает роль
 
@@ -29,44 +29,44 @@
 
 ### Переменные (defaults)
 
-| Переменная                                | Значение по умолчанию                     | Описание                                         |
-|-------------------------------------------|-------------------------------------------|--------------------------------------------------|
-| `clickhouse_version`                      | `'latest'`                                | Версия ClickHouse для установки                  |
-| `clickhouse_service_ensure`               | `'started'`                               | Состояние сервиса: `started` / `stopped`         |
-| `clickhouse_service_enable`               | `true`                                    | Автозапуск при загрузке системы                  |
-| `clickhouse_setup`                        | `'package'`                               | Способ установки: `package` / `source`           |
-| `clickhouse_remove`                       | `false`                                   | Флаг удаления сервиса                            |
-| `clickhouse_remove_full`                  | `false`                                   | Полное удаление (DB + config), требует remove=true |
-| `clickhouse_ready_retries`                | `3`                                       | Количество попыток проверки готовности            |
-| `clickhouse_ready_delay`                  | `5`                                       | Задержка между проверками (сек.)                 |
-| `clickhouse_profiles_default`             | *(см. defaults)*                          | Профили ClickHouse по умолчанию                  |
-| `clickhouse_profiles_custom`              | `{}`                                      | Пользовательские профили                         |
-| `clickhouse_http_port`                    | `8123`                                    | HTTP порт                                        |
-| `clickhouse_tcp_port`                     | `9000`                                    | TCP порт                                         |
-| `clickhouse_interserver_http`             | `9009`                                    | Межсерверный HTTP порт                           |
-| `clickhouse_ssl_server`                   | *(см. defaults)*                          | Параметры SSL-сертификатов сервера               |
-| `clickhouse_ssl_client`                   | *(см. defaults)*                          | Параметры SSL-клиента                            |
-| `clickhouse_listen_host`                  | `["::1", "127.0.0.1"]`                   | Список адресов для прослушивания                 |
-| `clickhouse_users_default`                | `default`, `readonly`                     | Пользователи по умолчанию                        |
-| `clickhouse_users_custom`                 | `{}`                                      | Пользовательские пользователи                    |
-| `clickhouse_quotas_default`               | `default`                                 | Квоты по умолчанию                               |
-| `clickhouse_quotas_custom`                | `{}`                                      | Пользовательские квоты                           |
-| `clickhouse_dbs_default`                  | `[]`                                      | Базы данных по умолчанию                         |
-| `clickhouse_dbs_custom`                   | `[]`                                      | Пользовательские базы данных                     |
-| `clickhouse_config`                       | *(см. defaults)*                          | Основные параметры конфигурации (max_connections, uncompressed_cache_size и т.д.) |
-| `clickhouse_dicts`                        | `[]`                                      | Внешние словари                                  |
-| `clickhouse_kafka_config`                 | `[]`                                      | Настройки Kafka-коннектора                       |
-| `clickhouse_kafka_topics_config`          | `[]`                                      | Конфигурация топиков Kafka                       |
-| `clickhouse_merge_tree_config`            | `[]`                                      | Параметры MergeTree                              |
-| `clickhouse_mlock_status`                 | `false`                                   | Включение mlock                                  |
-| `clickhouse_logger`                       | *(см. defaults)*                          | Настройки логирования                            |
-| `clickhouse_config_dictionaries_lazy_load`| `true`                                    | Ленивая загрузка встроенных словарей             |
-| `clickhouse_path_base`                    | `/var/lib`                                | Базовый путь                                     |
-| `clickhouse_path_configdir`               | `/etc/clickhouse-server`                  | Путь к конфигурационным файлам                   |
-| `clickhouse_path_logdir`                  | `/var/log/clickhouse-server`              | Путь к логу                                      |
-| `clickhouse_path_data`                    | `/var/lib/clickhouse/`                    | Путь к данным                                    |
-| `clickhouse_path_user_files`              | `/var/lib/clickhouse/user_files/`         | Путь к пользовательским файлам                   |
-| `clickhouse_path_tmp`                     | `/var/lib/clickhouse/tmp/`                | Путь к временным файлам                          |
+| Переменная                                 | Значение по умолчанию             | Описание                                                                          |
+| ------------------------------------------ | --------------------------------- | --------------------------------------------------------------------------------- |
+| `clickhouse_version`                       | `'latest'`                        | Версия ClickHouse для установки                                                   |
+| `clickhouse_service_ensure`                | `'started'`                       | Состояние сервиса: `started` / `stopped`                                          |
+| `clickhouse_service_enable`                | `true`                            | Автозапуск при загрузке системы                                                   |
+| `clickhouse_setup`                         | `'package'`                       | Способ установки: `package` / `source`                                            |
+| `clickhouse_remove`                        | `false`                           | Флаг удаления сервиса                                                             |
+| `clickhouse_remove_full`                   | `false`                           | Полное удаление (DB + config), требует remove=true                                |
+| `clickhouse_ready_retries`                 | `3`                               | Количество попыток проверки готовности                                            |
+| `clickhouse_ready_delay`                   | `5`                               | Задержка между проверками (сек.)                                                  |
+| `clickhouse_profiles_default`              | _(см. defaults)_                  | Профили ClickHouse по умолчанию                                                   |
+| `clickhouse_profiles_custom`               | `{}`                              | Пользовательские профили                                                          |
+| `clickhouse_http_port`                     | `8123`                            | HTTP порт                                                                         |
+| `clickhouse_tcp_port`                      | `9000`                            | TCP порт                                                                          |
+| `clickhouse_interserver_http`              | `9009`                            | Межсерверный HTTP порт                                                            |
+| `clickhouse_ssl_server`                    | _(см. defaults)_                  | Параметры SSL-сертификатов сервера                                                |
+| `clickhouse_ssl_client`                    | _(см. defaults)_                  | Параметры SSL-клиента                                                             |
+| `clickhouse_listen_host`                   | `["::1", "127.0.0.1"]`            | Список адресов для прослушивания                                                  |
+| `clickhouse_users_default`                 | `default`, `readonly`             | Пользователи по умолчанию                                                         |
+| `clickhouse_users_custom`                  | `{}`                              | Пользовательские пользователи                                                     |
+| `clickhouse_quotas_default`                | `default`                         | Квоты по умолчанию                                                                |
+| `clickhouse_quotas_custom`                 | `{}`                              | Пользовательские квоты                                                            |
+| `clickhouse_dbs_default`                   | `[]`                              | Базы данных по умолчанию                                                          |
+| `clickhouse_dbs_custom`                    | `[]`                              | Пользовательские базы данных                                                      |
+| `clickhouse_config`                        | _(см. defaults)_                  | Основные параметры конфигурации (max_connections, uncompressed_cache_size и т.д.) |
+| `clickhouse_dicts`                         | `[]`                              | Внешние словари                                                                   |
+| `clickhouse_kafka_config`                  | `[]`                              | Настройки Kafka-коннектора                                                        |
+| `clickhouse_kafka_topics_config`           | `[]`                              | Конфигурация топиков Kafka                                                        |
+| `clickhouse_merge_tree_config`             | `[]`                              | Параметры MergeTree                                                               |
+| `clickhouse_mlock_status`                  | `false`                           | Включение mlock                                                                   |
+| `clickhouse_logger`                        | _(см. defaults)_                  | Настройки логирования                                                             |
+| `clickhouse_config_dictionaries_lazy_load` | `true`                            | Ленивая загрузка встроенных словарей                                              |
+| `clickhouse_path_base`                     | `/var/lib`                        | Базовый путь                                                                      |
+| `clickhouse_path_configdir`                | `/etc/clickhouse-server`          | Путь к конфигурационным файлам                                                    |
+| `clickhouse_path_logdir`                   | `/var/log/clickhouse-server`      | Путь к логу                                                                       |
+| `clickhouse_path_data`                     | `/var/lib/clickhouse/`            | Путь к данным                                                                     |
+| `clickhouse_path_user_files`               | `/var/lib/clickhouse/user_files/` | Путь к пользовательским файлам                                                    |
+| `clickhouse_path_tmp`                      | `/var/lib/clickhouse/tmp/`        | Путь к временным файлам                                                           |
 
 ### Структура tasks
 
@@ -119,22 +119,22 @@ RedHat-совместимые дистрибутивы с `yum` (CentOS, RHEL, A
 
 ### Переменные (defaults)
 
-| Переменная           | Значение       | Описание                                  |
-|----------------------|----------------|-------------------------------------------|
-| `vector_version`     | `"0.55.0"`     | Версия Vector                             |
+| Переменная       | Значение   | Описание      |
+| ---------------- | ---------- | ------------- |
+| `vector_version` | `"0.55.0"` | Версия Vector |
 
 ### Переменные (vars)
 
-| Переменная            | Значение                                                        | Описание                          |
-|-----------------------|-----------------------------------------------------------------|-----------------------------------|
-| `vector_repo_url`     | URL бинарного tar.gz                                          | Ссылка для скачивания              |
-| `vector_config_dir`   | `/etc/vector`                                                   | Путь к конфигам                   |
-| `vector_config_path`  | `/etc/vector/vector.toml`                                       | Полный путь к главному конфигу    |
-| `vector_install_dir`  | `/opt/vector-{{ vector_version }}`                              | Папка распаковки архива           |
-| `vector_data_dir`     | `/var/lib/vector`                                               | Папка данных                      |
-| `vector_log_dir`      | `/var/log/vector`                                               | Папка логов                       |
-| `vector_user`         | `vector`                                                        | Имя пользователя                  |
-| `vector_group`        | `vector`                                                        | Имя группы                        |
+| Переменная           | Значение                           | Описание                       |
+| -------------------- | ---------------------------------- | ------------------------------ |
+| `vector_repo_url`    | URL бинарного tar.gz               | Ссылка для скачивания          |
+| `vector_config_dir`  | `/etc/vector`                      | Путь к конфигам                |
+| `vector_config_path` | `/etc/vector/vector.toml`          | Полный путь к главному конфигу |
+| `vector_install_dir` | `/opt/vector-{{ vector_version }}` | Папка распаковки архива        |
+| `vector_data_dir`    | `/var/lib/vector`                  | Папка данных                   |
+| `vector_log_dir`     | `/var/log/vector`                  | Папка логов                    |
+| `vector_user`        | `vector`                           | Имя пользователя               |
+| `vector_group`       | `vector`                           | Имя группы                     |
 
 ### Шаблоны
 
@@ -163,8 +163,8 @@ tasks/main.yml
 
 ### Handlers
 
-| Handler             | Действие              |
-|---------------------|-----------------------|
+| Handler                  | Действие                                                  |
+| ------------------------ | --------------------------------------------------------- |
 | `restart vector service` | Перезапуск сервиса Vector через `ansible.builtin.service` |
 
 Handler вызывается автоматически при изменениях в задачах `deploy config` (конфиг Vector) и `deploy vector config` (systemd unit) — используется механизм `notify`.
@@ -198,9 +198,9 @@ Handler вызывается автоматически при изменени�
 
 ### Поддерживаемые ОС
 
-| Дистрибутив | Версии |
-|-------------|--------|
-| CentOS/RHEL / AlmaLinux / Rocky (EL) | 8, 9 |
+| Дистрибутив                          | Версии |
+| ------------------------------------ | ------ |
+| CentOS/RHEL / AlmaLinux / Rocky (EL) | 8, 9   |
 
 ### Как работает роль
 
@@ -215,32 +215,32 @@ Handler вызывается автоматически при изменени�
 
 ### Переменные (defaults)
 
-| Переменная | Значение по умолчанию | Описание |
-|------------|----------------------|----------|
-| `lighthouse_nodejs_version` | `"18"` | Версия Node.js для установки (18, 20) |
-| `lighthouse_app_version` | `"latest"` | Версия @lhci/cli для установки |
-| `lighthouse_service_ensure` | `"started"` | Состояние сервиса: `started` / `stopped` |
-| `lighthouse_service_enable` | `true` | Автозапуск при загрузке системы |
-| `lighthouse_database_type` | `"sqlite"` | Тип БД: `sqlite` или `postgresql` |
-| `lighthouse_db_name` | `"lighthouse"` | Имя базы данных (для PostgreSQL) |
-| `lighthouse_db_user` | `"lighthouse"` | Пользователь БД (для PostgreSQL) |
-| `lighthouse_db_password` | `""` | Пароль БД (для PostgreSQL) |
-| `lighthouse_db_host` | `"127.0.0.1"` | Хост БД (для PostgreSQL) |
-| `lighthouse_db_port` | `5432` | Порт БД (для PostgreSQL) |
-| `lighthouse_listen_host` | `"0.0.0.0"` | Адрес прослушивания сервера |
-| `lighthouse_listen_port` | `9888` | Порт веб-сервера Lighthouse |
-| `lighthouse_auth_token` | `""` | Токен аутентификации LHCI_TOKEN |
-| `lighthouse_basicauth_enabled` | `false` | Включение Basic Auth поверх LHCI Token |
-| `lighthouse_basicauth_username` | `""` | Имя пользователя для Basic Auth |
-| `lighthouse_basicauth_password` | `""` | Пароль для Basic Auth |
-| `lighthouse_upload_dir` | `/var/lib/lighthouse/storage/upload-dir` | Папка для загруженных файлов |
-| `lighthouse_artifact_store_dir` | `/var/lib/lighthouse/storage/artifact-store-dir` | Папка хранения артефактов |
-| `lighthouse_project_dir` | `/opt/lighthouse` | Основная директория проекта |
-| `lighthouse_install_nginx` | `false` | Установить Nginx в качестве reverse-proxy |
-| `lighthouse_nginx_server_name` | `"lighthouse.example.com"` | Имя хоста для Nginx |
-| `lighthouse_nginx_ssl_enabled` | `false` | Включить SSL для Nginx |
-| `lighthouse_nginx_ssl_certificate` | `""` | Путь к SSL-сертификату |
-| `lighthouse_nginx_ssl_certificate_key` | `""` | Путь к ключу SSL |
+| Переменная                             | Значение по умолчанию                            | Описание                                  |
+| -------------------------------------- | ------------------------------------------------ | ----------------------------------------- |
+| `lighthouse_nodejs_version`            | `"18"`                                           | Версия Node.js для установки (18, 20)     |
+| `lighthouse_app_version`               | `"latest"`                                       | Версия @lhci/cli для установки            |
+| `lighthouse_service_ensure`            | `"started"`                                      | Состояние сервиса: `started` / `stopped`  |
+| `lighthouse_service_enable`            | `true`                                           | Автозапуск при загрузке системы           |
+| `lighthouse_database_type`             | `"sqlite"`                                       | Тип БД: `sqlite` или `postgresql`         |
+| `lighthouse_db_name`                   | `"lighthouse"`                                   | Имя базы данных (для PostgreSQL)          |
+| `lighthouse_db_user`                   | `"lighthouse"`                                   | Пользователь БД (для PostgreSQL)          |
+| `lighthouse_db_password`               | `""`                                             | Пароль БД (для PostgreSQL)                |
+| `lighthouse_db_host`                   | `"127.0.0.1"`                                    | Хост БД (для PostgreSQL)                  |
+| `lighthouse_db_port`                   | `5432`                                           | Порт БД (для PostgreSQL)                  |
+| `lighthouse_listen_host`               | `"0.0.0.0"`                                      | Адрес прослушивания сервера               |
+| `lighthouse_listen_port`               | `9888`                                           | Порт веб-сервера Lighthouse               |
+| `lighthouse_auth_token`                | `""`                                             | Токен аутентификации LHCI_TOKEN           |
+| `lighthouse_basicauth_enabled`         | `false`                                          | Включение Basic Auth поверх LHCI Token    |
+| `lighthouse_basicauth_username`        | `""`                                             | Имя пользователя для Basic Auth           |
+| `lighthouse_basicauth_password`        | `""`                                             | Пароль для Basic Auth                     |
+| `lighthouse_upload_dir`                | `/var/lib/lighthouse/storage/upload-dir`         | Папка для загруженных файлов              |
+| `lighthouse_artifact_store_dir`        | `/var/lib/lighthouse/storage/artifact-store-dir` | Папка хранения артефактов                 |
+| `lighthouse_project_dir`               | `/opt/lighthouse`                                | Основная директория проекта               |
+| `lighthouse_install_nginx`             | `false`                                          | Установить Nginx в качестве reverse-proxy |
+| `lighthouse_nginx_server_name`         | `"lighthouse.example.com"`                       | Имя хоста для Nginx                       |
+| `lighthouse_nginx_ssl_enabled`         | `false`                                          | Включить SSL для Nginx                    |
+| `lighthouse_nginx_ssl_certificate`     | `""`                                             | Путь к SSL-сертификату                    |
+| `lighthouse_nginx_ssl_certificate_key` | `""`                                             | Путь к ключу SSL                          |
 
 ### Структура tasks
 
@@ -255,9 +255,9 @@ tasks/main.yml
 ├── reload systemd            # daemon_reload
 ├── enable and start service  # Активация сервиса
 └── nginx reverse proxy       # Опциональный блок: install nginx + config (when: lighthouse_install_nginx)
-    ├── install nginx          
+    ├── install nginx
     ├── deploy nginx config    # Шаблон lighthouse-nginx.conf.j2 → notify: reload nginx
-    └── start nginx            
+    └── start nginx
 ```
 
 ### Шаблоны
@@ -280,11 +280,11 @@ tasks/main.yml
 
 ### Handlers
 
-| Handler | Действие |
-|---------|----------|
+| Handler              | Действие                                      |
+| -------------------- | --------------------------------------------- |
 | `restart lighthouse` | Перезапуск сервиса Lighthouse через `systemd` |
-| `reload nginx` | Грациозная перезагрузка Nginx (reload) |
-| `restart nginx` | Полная перезагрузка Nginx (restart) |
+| `reload nginx`       | Грациозная перезагрузка Nginx (reload)        |
+| `restart nginx`      | Полная перезагрузка Nginx (restart)           |
 
 Handler `restart lighthouse` вызывается автоматически при изменении systemd unit-файла (через `notify`).
 
